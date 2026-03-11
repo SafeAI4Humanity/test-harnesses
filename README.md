@@ -168,5 +168,4 @@ Please ensure new probes are clearly documented with expected behavior and the r
 Safe AI for Humanity Foundation is an independent nonprofit research organization dedicated to understanding, measuring, and mitigating risks from advanced AI systems. All research is freely published.
 
 - Website: [ai-4-h.org](https://ai-4-h.org)
-- Email: [info@ai-4-h.org](mailto:info@ai-4-h.org)
-- EIN: 41-4767005
+

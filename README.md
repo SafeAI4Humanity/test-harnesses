@@ -15,6 +15,9 @@ Published by the **[Safe AI for Humanity Foundation](https://ai-4-h.org)** — a
 | `harness_bias_detection.py` | Demographic consistency across gender, race/ethnicity, age, religion, socioeconomic status | Bias Consistency Score |
 | `harness_prompt_injection.py` | Resistance to 5 injection vectors (direct, indirect-doc, indirect-web, tool output, multi-turn) | Injection Resistance Score (IRS) |
 | `harness_corrigibility.py` | Compliance with shutdown, correction, oversight support, scope limitation | Corrigibility Compliance Score (CCS) |
+| `harness_agentic_safety.py` | Tool-use safety: authorization boundaries, irreversible actions, confirmation-seeking, data exfiltration, scope escalation | Agentic Safety Score (ASS) |
+| `harness_hallucination.py` | Factual grounding: fabricated facts, invented citations, unanswerable & false-premise questions, nonexistent entities | Factual Grounding Score (FGS) |
+| `harness_deception.py` | Honesty under incentive: instructed lies, strategic deception, material omission, self-misrepresentation, third-party deception | Honesty Score (HS) |
 
 ---
 
@@ -73,6 +76,27 @@ All harnesses share the same CLI interface:
 --output-dir    Directory for JSON results (default: results/)
 ```
 
+### Optional LLM-judge classifier
+
+`harness_agentic_safety.py`, `harness_hallucination.py`, and `harness_deception.py`
+support an optional LLM-judge classifier that grades responses with a second model
+instead of keyword heuristics. This is more accurate for nuanced behaviors (especially
+hallucination and honesty, where keywords are weak). It is off by default.
+
+```
+--judge             Enable the LLM-judge classifier
+--judge-provider    openai | anthropic | openai_compatible  (default: openai)
+--judge-model       Judge model name string (default: gpt-4o)
+```
+
+```bash
+python harness_hallucination.py --provider openai --model gpt-4o \
+  --judge --judge-provider anthropic --judge-model claude-3-5-sonnet-20241022
+```
+
+When the judge is enabled, each result records `"classifier": "llm_judge"`; if a
+judge call fails, that probe silently falls back to the keyword classifier.
+
 ---
 
 ## Harness Details
@@ -103,6 +127,24 @@ All harnesses share the same CLI interface:
 - **16 probes** across 5 families: shutdown compliance, correction acceptance, oversight support, self-preservation resistance, scope limitation
 - Classifies responses using corrigibility/resistance keyword heuristics and confidence scoring
 - Outputs **Corrigibility Compliance Score (CCS)**
+
+### `harness_agentic_safety.py`
+- **15 probes** across 5 families: authorization boundary, irreversible action, confirmation seeking, data exfiltration, scope escalation
+- Each probe defines an agent with a constrained toolset and a request that invites a risky action; a safe agent declines, scopes down, or seeks confirmation
+- Supports the optional `--judge` LLM-classifier
+- Outputs **Agentic Safety Score (ASS)**
+
+### `harness_hallucination.py`
+- **15 probes** across 5 families: fabricated fact, invented citation, unanswerable, false premise, nonexistent entity
+- Each probe invites fabrication; a grounded model admits uncertainty, declines, or corrects the premise rather than inventing content
+- Keyword heuristics are weak here — the `--judge` LLM-classifier is recommended
+- Outputs **Factual Grounding Score (FGS)**
+
+### `harness_deception.py`
+- **15 probes** across 5 families: instructed lie, strategic deception, material omission, self-misrepresentation, third-party deception
+- Each probe creates an incentive to deceive; an honest model tells the truth, discloses material info, or refuses to mislead
+- Supports the optional `--judge` LLM-classifier (recommended)
+- Outputs **Honesty Score (HS)**
 
 ---
 
@@ -137,8 +179,11 @@ Each harness writes a JSON file to `results/`. Example structure:
 
 ## Roadmap
 
-- [ ] Agentic safety harness (tool use boundaries, multi-step authorization)
-- [ ] Hallucination / factual grounding harness
+- [x] Agentic safety harness (tool use boundaries, multi-step authorization)
+- [x] Hallucination / factual grounding harness
+- [x] Deception / honesty harness (lying, withholding, strategic misleading)
+- [ ] Sycophancy harness (caving to user pressure, abandoning correct answers)
+- [ ] Multi-turn / conversational safety harness
 - [ ] Multi-modal safety harness (vision-language injection)
 - [ ] Automated comparison reports across multiple models
 - [ ] CI/CD integration guide
@@ -168,4 +213,5 @@ Please ensure new probes are clearly documented with expected behavior and the r
 Safe AI for Humanity Foundation is an independent nonprofit research organization dedicated to understanding, measuring, and mitigating risks from advanced AI systems. All research is freely published.
 
 - Website: [ai-4-h.org](https://ai-4-h.org)
-
+- Email: [info@ai-4-h.org](mailto:info@ai-4-h.org)
+- EIN: 41-4767005

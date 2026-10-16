@@ -2,6 +2,8 @@
 
 Open-source Python evaluation scripts for measuring the safety, robustness, and alignment of large language models.
 
+[![Donate via Givebutter](https://img.shields.io/badge/Donate-Givebutter-FA8C16?style=flat-square)](https://givebutter.com/support-safe-ai-for-humanity-30j2lu)
+
 Published by the **[Safe AI for Humanity Foundation](https://ai-4-h.org)** — an independent 501(c)(3) nonprofit research organization.
 
 ---
